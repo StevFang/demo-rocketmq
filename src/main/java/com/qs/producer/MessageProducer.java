@@ -1,5 +1,6 @@
 package com.qs.producer;
 
+import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.common.message.Message;
 import com.qs.exception.RocketMQException;
 
@@ -16,12 +17,12 @@ public interface MessageProducer {
      * 发送单条消息
      * @param message
      */
-    void sendMessage(Message message) throws RocketMQException;
+    SendResult sendMessage(Message message) throws RocketMQException;
 
     /**
      * 批量发送消息
      * @param messages
      */
-    void sendMessages(List<Message> messages) throws RocketMQException;
+    List<SendResult> sendMessages(List<Message> messages) throws RocketMQException;
 
 }

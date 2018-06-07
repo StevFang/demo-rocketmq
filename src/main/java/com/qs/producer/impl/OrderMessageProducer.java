@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class OrderMessageProducer implements MessageProducer {
     private int sendMsgTimeout ;
 
     @Override
-    public void sendMessage(Message message) throws RocketMQException {
+    public SendResult sendMessage(Message message) throws RocketMQException {
         DefaultMQProducer producer = initProducer();
         try{
             producer.start();
@@ -50,6 +51,7 @@ public class OrderMessageProducer implements MessageProducer {
             SendResult result = producer.send(message);
             logger.info("消息:" + result.getMsgId() + ", 发送响应:" + result.getSendStatus());
 
+            return result;
         }catch (Exception e){
             logger.error("消息发送发生异常", e);
             throw new RocketMQException(e);
@@ -59,16 +61,20 @@ public class OrderMessageProducer implements MessageProducer {
     }
 
     @Override
-    public void sendMessages(List<Message> messages) throws RocketMQException {
+    public List<SendResult> sendMessages(List<Message> messages) throws RocketMQException {
         DefaultMQProducer producer = initProducer();
 
         try{
             producer.start();
 
+            List<SendResult> sendResults = new ArrayList<>();
             for(Message message : messages){
                 SendResult result = producer.send(message);
                 logger.info("消息:" + result.getMsgId() + ", 发送响应:" + result.getSendStatus());
+                sendResults.add(result);
             }
+
+            return sendResults;
         }catch (Exception e){
             logger.error("消息发送发生异常", e);
             throw new RocketMQException(e);
